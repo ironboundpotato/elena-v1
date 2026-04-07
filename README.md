@@ -15,6 +15,10 @@ The goal is simple: **user input goes in, governance decision comes out**.
 
 ---
 
+Licensed under the Gilbert Attribution License v1.0. Reuse, modification, distribution, and commercial use are permitted with required attribution.
+
+---
+
 ## What this demo shows
 
 This repo is a small working artifact that bridges architecture into implementation.
