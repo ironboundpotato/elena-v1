@@ -1,0 +1,25 @@
+{
+  "routes": [
+    "allow",
+    "allow_with_warning",
+    "ask_for_clarification",
+    "refuse",
+    "redirect_to_safe_mode"
+  ],
+  "constraints": [
+    "role_integrity",
+    "declarative_boundaries",
+    "scope_control",
+    "intent_loyalty",
+    "confidence_control",
+    "structural_obedience",
+    "human_primacy"
+  ],
+  "drift_flags": [
+    "role_drift_risk",
+    "scope_drift_risk",
+    "intent_drift_risk",
+    "confidence_drift_risk",
+    "format_drift_risk"
+  ]
+}
