@@ -1,8 +1,12 @@
-from __future__ import annotations
-
+from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
-from app.schemas import IntentResult
+
+@dataclass
+class IntentResult:
+    label: str
+    confidence: float
+    reasons: List[str]
 
 
 KEYWORDS: Dict[str, Tuple[List[str], float]] = {
@@ -10,87 +14,68 @@ KEYWORDS: Dict[str, Tuple[List[str], float]] = {
         [
             "pretend to be",
             "impersonate",
-            "phishing",
-            "spoof",
-            "fake invoice",
-            "manipulate hr",
-            "social engineer",
+            "fake being",
             "pose as",
+            "pressure hr",
+            "manipulate hr",
+            "lie to",
+            "deceive",
+            "trick them",
         ],
         0.94,
     ),
-    "self_harm": (
+    "harmful": (
         [
-            "kill myself",
-            "end my life",
-            "suicide",
-            "hurt myself",
-            "cut myself",
-        ],
-        0.98,
-    ),
-    "data_exfiltration": (
-        [
-            "exfiltrate",
-            "steal credentials",
-            "dump database",
-            "scrape private",
-            "bypass login",
-            "api key leak",
-            "password list",
-        ],
-        0.95,
-    ),
-    "unsafe": (
-        [
-            "build a bomb",
+            "bypass security",
+            "disable alarms",
+            "steal",
+            "break into",
+            "intrusion",
             "malware",
-            "ransomware",
-            "weaponize",
-            "how to poison",
-            "ddos",
+            "exploit",
         ],
-        0.95,
-    ),
-    "policy_sensitive": (
-        [
-            "medical advice",
-            "legal advice",
-            "diagnose me",
-            "investment advice",
-            "prescribe",
-            "lawsuit",
-        ],
-        0.82,
-    ),
-    "ambiguous": (
-        [
-            "whatever works",
-            "do anything necessary",
-            "no matter what",
-            "use any method",
-        ],
-        0.67,
+        0.96,
     ),
 }
 
 
 def classify_intent(prompt: str) -> IntentResult:
-    """Simple rule-based intent classifier for v1 demo use."""
-    lowered = prompt.lower().strip()
+    lowered = (prompt or "").lower().strip()
     matched_reasons: List[str] = []
 
     for label, (terms, confidence) in KEYWORDS.items():
         hits = [term for term in terms if term in lowered]
         if hits:
             matched_reasons.extend([f"Matched keyword: '{hit}'" for hit in hits])
-            return IntentResult(label=label, confidence=confidence, reasons=matched_reasons)
+            return IntentResult(
+                label=label,
+                confidence=confidence,
+                reasons=matched_reasons,
+            )
 
     if len(lowered.split()) < 4:
         return IntentResult(
             label="ambiguous",
             confidence=0.58,
             reasons=["Prompt is very short and underspecified."],
+        )
+
+    vague_terms = [
+        "something",
+        "stuff",
+        "things",
+        "important",
+        "handle this",
+        "take care of this",
+        "do this",
+        "fix this",
+    ]
+
+    if any(term in lowered for term in vague_terms):
+        return IntentResult(
+            label="ambiguous",
+            confidence=0.60,
+            reasons=["Prompt contains vague or underspecified language."],
         )
 
     return IntentResult(
